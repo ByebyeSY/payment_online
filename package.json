@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "web:dev" : "lerna run --scope=nextjs dev",
+    "api:dev" : "lerna run --scope=api start"
+  },
   "dependencies": {},
   "devDependencies": {
     "lerna": "^7.4.2"
