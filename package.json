@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "web:dev" : "lerna run --scope=nextjs dev",
+    "ihm:dev" : "lerna run --scope=ihm dev",
     "api:dev" : "lerna run --scope=api start"
   },
   "dependencies": {},
