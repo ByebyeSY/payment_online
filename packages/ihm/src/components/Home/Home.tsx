@@ -1,16 +1,23 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 
 const Home: FC = () => {
+  const [title, setTitle] = useState<string>("");
+
   const hello = async () => {
     const res = await fetch("/api");
-    res.json().then((v) => console.log(v));
+    res.json().then((v) => setTitle(v));
 
     return res;
   };
 
-  return <button onClick={hello}>click me!</button>;
+  return (
+    <div>
+      <h1>{title}</h1>
+      <button onClick={hello}>click me!</button>;
+    </div>
+  );
 };
 
 export default Home;
