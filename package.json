@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "ihm:dev" : "lerna run --scope=ihm dev",
-    "api:dev" : "lerna run --scope=api start"
+    "api:dev" : "lerna run --scope=api start:dev"
   },
   "dependencies": {},
   "devDependencies": {
