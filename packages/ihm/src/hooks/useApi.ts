@@ -7,7 +7,8 @@ const useApi = async <T>(url: string, config?: AxiosRequestConfig) => {
 
     return NextResponse.json(res.data);
   } catch (error: any) {
-    throw new Error("Internal server error");
+    console.log(error.response.data);
+    return NextResponse.json("");
   }
 };
 
