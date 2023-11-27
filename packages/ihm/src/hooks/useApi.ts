@@ -7,8 +7,7 @@ const useApi = async <T>(url: string, config?: AxiosRequestConfig) => {
 
     return NextResponse.json(res.data);
   } catch (error: any) {
-    console.log(error.response.data);
-    return NextResponse.json("");
+    return NextResponse.json(error.response.data);
   }
 };
 

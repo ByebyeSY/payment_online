@@ -1,6 +1,8 @@
 "use client";
 
+import customFetch from "@/hooks/customFetch";
 import { FC, useState } from "react";
+import toast from "react-hot-toast";
 
 const Home: FC = () => {
   const [title, setTitle] = useState<string>("");
@@ -8,12 +10,12 @@ const Home: FC = () => {
 
   const hello = async () => {
     const res = await fetch("/api");
-    res.json().then((v) => setTitle(v));
+    toast.error("nope");
   };
 
   const registerFn = async () => {
-    const res = await fetch("/api", { method: "POST" });
-    res.json().then((v) => setRegister(v));
+    const res = customFetch("/api", "POST");
+    setRegister(res as any);
   };
 
   return (
