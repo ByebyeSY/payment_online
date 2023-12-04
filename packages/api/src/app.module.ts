@@ -5,10 +5,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ProductsModule,
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as any,
       host: process.env.DATABASE_HOST,

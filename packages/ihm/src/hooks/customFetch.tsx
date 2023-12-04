@@ -9,7 +9,11 @@ const customFetch = async (
   try {
     const response = await (await fetch(url, { method })).json();
 
-    if (response.status === 200 || response.status === 202) {
+    if (
+      typeof response === "string" ||
+      response.status === 200 ||
+      response.status === 202
+    ) {
       return response;
     }
 
