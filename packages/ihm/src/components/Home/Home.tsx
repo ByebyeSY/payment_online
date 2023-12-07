@@ -1,29 +1,72 @@
 "use client";
 
 import customFetch from "@/hooks/customFetch";
-import { FC, useState } from "react";
-import toast from "react-hot-toast";
+import { Elements } from "@stripe/react-stripe-js";
+import {
+  Appearance,
+  StripeElementsOptions,
+  loadStripe,
+} from "@stripe/stripe-js";
+import Image from "next/image";
+import { FC, useEffect, useMemo, useState } from "react";
+import zoroImage from "../../../public/image/figurine-zoro.jpg";
+import masterCardLogo from "../../../public/logo/MasterCard.png";
+import payPalLogo from "../../../public/logo/Paypal.png";
+import visaLogo from "../../../public/logo/visa.png";
+import CheckoutForm from "../CheckoutForm";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string
+);
+
+const appearance: Appearance = {
+  theme: "stripe",
+};
+
+const PAYMENT_LOGO = [visaLogo, masterCardLogo, payPalLogo];
 
 const Home: FC = () => {
-  const [title, setTitle] = useState<string>("");
-  const [register, setRegister] = useState<String>("");
+  const [clientSecret, setClientSecret] = useState("");
 
-  const hello = async () => {
-    const res = await fetch("/api");
-    toast.error("nope");
-  };
+  const options: StripeElementsOptions = useMemo(
+    () => ({
+      clientSecret,
+      appearance,
+    }),
+    [clientSecret, appearance]
+  );
 
-  const registerFn = async () => {
-    const res = customFetch("/api", "POST");
-    setRegister(res as any);
-  };
+  useEffect(() => {
+    customFetch("/api/product/pay", "POST").then((v) => setClientSecret(v));
+  }, []);
 
   return (
-    <div>
-      <h1>{title}</h1>
-      <button onClick={hello}>click me!</button>
-      <h1>{register}</h1>
-      <button onClick={registerFn}>Click here to register!</button>
+    <div className="w-[1024px] bg-[#fafafa] bg-opacity-80 h-[720px] flex text-[#0a0a0a]">
+      <div className="relative h-full w-[48%] flex items-center bg-[#468B31]">
+        <Image src={zoroImage} alt="zoro-image" />
+        <div className="absolute bottom-0 w-full h-[120px] backdrop-blur-md text-white  flex flex-col justify-center items-center">
+          <span className="text-2xl font-semibold">TOTAL</span>
+          <span className="text-2xl font-semibold">500 €</span>
+        </div>
+      </div>
+      <div className="w-[52%] h-full">
+        <div className="relative w-full h-[16%] flex justify-evenly items-center">
+          {PAYMENT_LOGO.map((logo) => (
+            <Image
+              alt="logo-visa"
+              src={logo}
+              className="w-[20%] object-contain"
+            />
+          ))}
+        </div>
+        <div className="w-full h-[84%] p-16 bg-white">
+          {clientSecret && (
+            <Elements options={options} stripe={stripePromise}>
+              <CheckoutForm />
+            </Elements>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
