@@ -53,6 +53,7 @@ const Home: FC = () => {
         <div className="relative w-full h-[16%] flex justify-evenly items-center">
           {PAYMENT_LOGO.map((logo) => (
             <Image
+              key={logo.src}
               alt="logo-visa"
               src={logo}
               className="w-[20%] object-contain"
