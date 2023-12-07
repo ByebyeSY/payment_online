@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  PAYMENT_INTENT_CLIENT_SECRET,
+  PAYMENT_INTENT_STATUS,
+  PAYMENT_RETURN_URL,
+  STRIPE_ERROR,
+} from "@/constant/stripe";
+import {
   PaymentElement,
   useElements,
   useStripe,
@@ -10,43 +16,39 @@ import {
   StripeElements,
   StripePaymentElementOptions,
 } from "@stripe/stripe-js";
-import { FormEventHandler, useEffect, useState } from "react";
+import { FC, FormEventHandler, useEffect, useState } from "react";
 
-const CheckoutForm = () => {
-  const stripe: Stripe = useStripe() as Stripe;
-  const elements: StripeElements = useElements() as StripeElements;
+const paymentElementOptions: StripePaymentElementOptions = {
+  layout: "tabs",
+};
 
+const CheckoutForm: FC = () => {
   const [email, setEmail] = useState("");
-
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const stripe: Stripe = useStripe() as Stripe;
+  const elements: StripeElements = useElements() as StripeElements;
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
-      // Stripe.js hasn't yet loaded.
-      // Make sure to disable form submission until Stripe.js has loaded.
-      return;
-    }
+    if (!stripe || !elements) return;
 
     setIsLoading(true);
 
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: PAYMENT_RETURN_URL,
         receipt_email: email,
       },
     });
 
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
+    if (
+      error.type === STRIPE_ERROR.cardError ||
+      error.type === STRIPE_ERROR.validationError
+    ) {
       setMessage(error.message ?? "");
     } else {
       setMessage("An unexpected error occurred.");
@@ -56,27 +58,23 @@ const CheckoutForm = () => {
   };
 
   useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+    if (!stripe) return;
 
     const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
+      PAYMENT_INTENT_CLIENT_SECRET
     );
 
-    if (!clientSecret) {
-      return;
-    }
+    if (!clientSecret) return;
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent?.status) {
-        case "succeeded":
+        case PAYMENT_INTENT_STATUS.succeeded:
           setMessage("Payment succeeded!");
           break;
-        case "processing":
+        case PAYMENT_INTENT_STATUS.processing:
           setMessage("Your payment is processing.");
           break;
-        case "requires_payment_method":
+        case PAYMENT_INTENT_STATUS.requiresPaymentMethod:
           setMessage("Your payment was not successful, please try again.");
           break;
         default:
@@ -85,10 +83,6 @@ const CheckoutForm = () => {
       }
     });
   }, [stripe]);
-
-  const paymentElementOptions: StripePaymentElementOptions = {
-    layout: "tabs",
-  };
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
@@ -109,7 +103,6 @@ const CheckoutForm = () => {
           {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
         </span>
       </button>
-      {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>
   );
