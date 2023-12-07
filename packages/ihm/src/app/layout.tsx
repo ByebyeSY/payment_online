@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body
-        className={`${openSans.className} bg-zoro-bg bg-no-repeat bg-cover bg-center backdrop-blur-md`}
-      >
+      <body className={`${openSans.className}`}>
         <Toaster position="top-right" />
         {children}
       </body>
