@@ -13,12 +13,16 @@ export class ProductsService {
   ) {}
 
   getAllProducts() {
+    console.log("yes");
+
     return this.productRepository.find();
   }
 
   createProduct(createProductDto: CreateProductDto) {
-    this.productRepository.create(createProductDto);
+    createProductDto.stripeKey = "testtt";
+    console.log(createProductDto);
 
+    this.productRepository.save(createProductDto);
     // stripe.products
     //   .create({
     //     name: 'Starter Subscription',

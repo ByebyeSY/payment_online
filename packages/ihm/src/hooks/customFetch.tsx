@@ -4,10 +4,16 @@ import toast from "react-hot-toast";
 
 const customFetch = async (
   url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE"
+  method: "GET" | "POST" | "PUT" | "DELETE",
+  options?: RequestInit
 ) => {
   try {
-    const response = await (await fetch(url, { method })).json();
+    const response = await (
+      await fetch(url, {
+        method,
+        ...options,
+      })
+    ).json();
 
     if (
       typeof response === "string" ||
